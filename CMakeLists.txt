@@ -3,4 +3,6 @@ project(data_constructure)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(data_constructure main.cpp)
+add_executable(data_constructure main.cpp
+        ex2/sequenceTable.cpp
+        full_prototypes.h)
