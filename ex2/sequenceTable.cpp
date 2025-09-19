@@ -1,7 +1,10 @@
 //
 // Created by comardom on 25-9-16.
 //
+#include <algorithm>
+
 #include "cppSafeInput.h"
+#include <random>
 #define SQ_SIZE 100
 namespace sequenceTable
 {
@@ -15,41 +18,67 @@ namespace sequenceTable
 	}Sqlist;
 
 
+	static const int demoA[100] = {1,1,2,3,4,5,6,6,6,7,8,10,51,66,852,6666};
+	static const int demoB[100] = {2,6,7,7,7,8,15,21,66,888,889,8899,10035};
+
 	void initList(Sqlist &sqlist);
 	Sqlist* c_initList();
 	void destroyList(Sqlist &sqlist);
+	void clearList(Sqlist &sqlist);
+	int insert_for_index(Sqlist &sqlist, int index, T value);
+	void print_list(const Sqlist &sqlist);
+	int insert_non_decreasing_sort(Sqlist &sqlist, T value);
+	void find_index_of_value(const Sqlist &sqlist, const T &value);
+	T find_previous(const Sqlist &sqlist, const T &value);
+	T find_next(const Sqlist &sqlist, const T &value);
+	void delete_for_index(Sqlist &sqlist, int index);
+	void delete_for_element(Sqlist &sqlist, const T &value);
+	void sortList(Sqlist &sqlist);
+	void merge(const Sqlist &sqlist1, const Sqlist &sqlist2, Sqlist &sqlist3);
 
 	int main_SQ()
 	{
-		Sqlist *list_ptr = nullptr;
+		Sqlist *list_ptrA = nullptr;
+		Sqlist *list_ptrB = nullptr;
+		Sqlist *list_ptrC = nullptr;
 		for(;;)
 		{
 			std::cout<<"1.init 2.destroy 3.clear 4.is null 5.length 6.index->element "
-		<<"7.element->index 8.previous 9.next 10.insert in index 11.delete in index "
-		<<"12.delete for element 13.sort 14.print 15.merge"<<std::endl;
+			<<"7.element->index 8.previous 9.next 10.insert in index 11.delete in index "
+			<<"12.delete for element 13.sort 14.print 15.merge"<<std::endl;
 			switch(hd_input_s())
 			{
 				case 1:
-					if(list_ptr)
+					if(list_ptrA)
 					{
 						std::cout<<"Plz destroy and recreat it."
 						<<std::endl;
 					}
 					else
 					{
-						list_ptr = new Sqlist;
-						initList(*list_ptr);
-						//下面这个是C语言版本，默认使用C++版本
-						// list_ptr = c_initList();
-						std::cout<<"Init."<<std::endl;
+						list_ptrA = new Sqlist;
+						initList(*list_ptrA);
+
+						std::cout << "Init. use demoA to populate? (1 for Yes, 0 for No)"
+						<< std::endl;
+						if (hd_input_s())
+						{
+							for(int i = 0; i < 16; i++)
+							{
+								insert_for_index(*list_ptrA, i, demoA[i]);
+							}
+							list_ptrA->length = 16;
+							std::cout << "List populated with demoA." << std::endl;
+						}
+						std::cout << "Init." << std::endl;
 					}
 					break;
 				case 2:
-					if(list_ptr)
+					if(list_ptrA)
 					{
-						destroyList(*list_ptr);
-						delete list_ptr;
-						list_ptr = nullptr;
+						destroyList(*list_ptrA);
+						delete list_ptrA;
+						list_ptrA = nullptr;
 						std::cout<<"Destruction."<<std::endl;
 					}
 					else
@@ -58,50 +87,201 @@ namespace sequenceTable
 					}
 					break;
 				case 3:
-					// TODO: 处理 case 3
+					if(list_ptrA)
+					{
+						clearList(*list_ptrA);
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 4:
-					// TODO: 处理 case 4
+					std::cout << (list_ptrA?"False":"True") << std::endl;
 					break;
 				case 5:
-					// TODO: 处理 case 5
+					if(list_ptrA)
+					{
+						std::cout << list_ptrA->length << std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 6:
-					// TODO: 处理 case 6
+					if(list_ptrA)
+					{
+						std::cout << "index." << std::endl;
+						int index = 0;
+						num_input_s(index);
+						std::cout << list_ptrA->data[index] << std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 7:
-					// TODO: 处理 case 7
+					std::cout << "default all to find." << std::endl;
+					if(list_ptrA)
+					{
+						std::cout << "what index?" << std::endl;
+						int tmp_index;
+						num_input_s(tmp_index);
+						find_index_of_value(*list_ptrA, tmp_index);
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 8:
-					// TODO: 处理 case 8
+					if(list_ptrA)
+					{
+						std::cout << "what element?" << std::endl;
+						int tmp_index;
+						num_input_s(tmp_index);
+						std::cout <<find_previous(*list_ptrA, tmp_index)<< std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 9:
-					// TODO: 处理 case 9
+					if(list_ptrA)
+					{
+						std::cout << "what element?" << std::endl;
+						int tmp_index;
+						num_input_s(tmp_index);
+						std::cout <<find_next(*list_ptrA, tmp_index)<< std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 10:
-					// TODO: 处理 case 10
+					std::cout << "index? why not sorted? 1 to sorted, 0 to index.";
+					if(hd_input_s())
+					{
+						if(list_ptrA)
+						{
+							T tmp_value;
+							num_input_s(tmp_value);
+							insert_non_decreasing_sort(*list_ptrA, tmp_value);
+							std::cout << "Insert(sort)." << std::endl;
+						}
+						else
+						{
+							std::cout<<"No creation."<<std::endl;
+						}
+					}
+					else
+					{
+						if(list_ptrA)
+						{
+							std::cout << "index?" << std::endl;
+							int tmp_index;
+							T tmp_value;
+							num_input_s(tmp_index);
+							std::cout << "value?" << std::endl;
+							num_input_s(tmp_value);
+							insert_for_index(*list_ptrA,tmp_index,tmp_value);
+							std::cout << "Insert." << std::endl;
+						}
+						else
+						{
+							std::cout<<"No creation."<<std::endl;
+						}
+					}
 					break;
 				case 11:
-					// TODO: 处理 case 11
+					if(list_ptrA)
+					{
+						std::cout << "index?" << std::endl;
+						int tmp_index;
+						num_input_s(tmp_index);
+						delete_for_index(*list_ptrA, tmp_index);
+						std::cout << "Delete." << std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 12:
-					// TODO: 处理 case 12
+					if(list_ptrA)
+					{
+						std::cout << "what element?" << std::endl;
+						int tmp_value;
+						num_input_s(tmp_value);
+						delete_for_element(*list_ptrA, tmp_value);
+						std::cout << "Delete." << std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 13:
-					// TODO: 处理 case 13
+					if(list_ptrA)
+					{
+						sortList(*list_ptrA);
+						std::cout << "Sort." << std::endl;
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 14:
-					// TODO: 处理 case 14
+					print_list(*list_ptrA);
 					break;
 				case 15:
-					// TODO: 处理 case 15
+					list_ptrB = new Sqlist;
+					initList(*list_ptrB);
+					list_ptrC = new Sqlist;
+					initList(*list_ptrC);
+					for(int i = 0; i < 13; i++)
+					{
+						insert_for_index(*list_ptrB, i, demoB[i]);
+					}
+					list_ptrB->length=13;
+					std::cout << "List populated with demoB." << std::endl;
+
+					merge(*list_ptrA,*list_ptrB,*list_ptrC);
+					print_list(*list_ptrC);
+
+					if(list_ptrA)
+					{
+						destroyList(*list_ptrA);
+						delete list_ptrA;
+						list_ptrA = nullptr;
+						std::cout<<"Destruction."<<std::endl;
+					}
+					if(list_ptrB)
+					{
+						destroyList(*list_ptrB);
+						delete list_ptrB;
+						list_ptrB = nullptr;
+						std::cout<<"Destruction."<<std::endl;
+					}
+					if(list_ptrC)
+					{
+						destroyList(*list_ptrC);
+						delete list_ptrC;
+						list_ptrC = nullptr;
+						std::cout<<"Destruction."<<std::endl;
+					}
 					break;
 				default:
-					if(list_ptr)
+					if(list_ptrA)
 					{
-						destroyList(*list_ptr);
-						delete list_ptr;
-						list_ptr = nullptr;
+						destroyList(*list_ptrA);
+						delete list_ptrA;
+						list_ptrA = nullptr;
 						std::cout<<"Destruction."<<std::endl;
 					}
 					return 0;
@@ -115,7 +295,6 @@ namespace sequenceTable
 		// sqlist.data = static_cast<T *>(malloc(sizeof(T) * SQ_SIZE));
 		//使用C++风格的new而不是malloc
 		sqlist.data = new T[SQ_SIZE];
-		if(!sqlist.data){exit(1);}
 		sqlist.length = 0;
 		sqlist.capacity = SQ_SIZE;
 	}
@@ -139,11 +318,6 @@ namespace sequenceTable
 	}
 	//以下代码默认使用引用，不再赘述
 
-	void clearList(Sqlist &sqlist)
-	{
-		sqlist.length = 0; // 将长度设为0，表示顺序表为空
-	}
-
 	void destroyList(Sqlist &sqlist)
 	{
 		if(sqlist.data)
@@ -162,9 +336,198 @@ namespace sequenceTable
 		sqlist.capacity = 0;
 	}
 
+	void clearList(Sqlist &sqlist)
+	{
+		sqlist.length = 0; // 将长度设为0，表示顺序表为空
+	}
+
+	int insert_for_index(Sqlist &sqlist, int index, const T value)
+	{
+		if(sqlist.length>=SQ_SIZE)
+		{
+			std::cout<<"SIZEERR"<<std::endl;
+			return -1;
+		}
+		if(index>sqlist.length || index<0)
+		{
+			std::cout<<"INDEXERR"<<std::endl;
+			return -1;
+		}
+		for(int i=sqlist.length;i>index;i--)
+		{
+			sqlist.data[i]=sqlist.data[i-1];
+		}
+		sqlist.data[index]=value;
+		sqlist.length++;
+		return 0;
+	}
+
+	void find_index_of_value(const Sqlist &sqlist, const T &value)
+	{
+		for(int i=0;i<sqlist.length;i++)
+		{
+			if(sqlist.data[i]==value)
+			{
+				std::cout<<i<<" "<<std::endl;
+			}
+		}
+	}
+
+	short randRandRand()
+	{
+		// 1. 创建静态的随机数源和引擎，只初始化一次
+		static std::random_device rd;
+		static std::mt19937 gen(rd());
+
+		// 2. 创建静态的均匀整数分布器
+		static std::uniform_int_distribution<> distrib(-1, 1);
+
+		// 3. 调用分布器生成随机数
+		return static_cast<short>(distrib(gen));
+	}
+
+	T find_previous(const Sqlist &sqlist, const T &value)
+	{
+		if(sqlist.length==0)
+		{
+			std::cout<<"SIZEERR"<<std::endl;
+			return -1;
+		}
+		short randRandRand();
+		std::cout<<"default is to make sure it is sorted,"
+		<<" so if disorder, back one of it."<<std::endl;
+		int where = 0;
+		if(randRandRand())
+		{
+			for(int left=0,right=sqlist.length-1;left<=right;)
+			{
+				int middle = (left+right)/2;
+				if(sqlist.data[middle]==value)
+				{
+					where=middle;
+					if(where == 0)
+					{
+						std::cout<<"CROSSINGLINEERR"<<std::endl;
+						return -1;
+					}
+					goto find_previous_binary_success;
+				}
+				else if(sqlist.data[middle]<value)
+				{
+					left=middle+1;
+				}
+				else if(sqlist.data[middle]>value)
+				{
+					right=middle-1;
+				}
+				else
+				{
+					std::cout<<"ELEMINVALID"<<std::endl;
+					return -1;
+				}
+			}
+			if(false)
+			{
+				find_previous_binary_success:return sqlist.data[where-1];
+			}
+		}
+		else
+		{
+			for(int i=0;i<sqlist.length;i++)
+			{
+				if(sqlist.data[i]==value)
+				{
+					where=i;
+					if(where == 0)
+					{
+						std::cout<<"CROSSINGLINEERR"<<std::endl;
+						return -1;
+					}
+					goto find_previous_not_binary_success;
+				}
+			}
+			if(false)
+			{
+				find_previous_not_binary_success:return sqlist.data[where-1];
+			}
+			return -1;
+		}
+		std::cout<<"PROCESSERR"<<std::endl;
+		return -1;
+	}
+
+	T find_next(const Sqlist &sqlist, const T &value)
+	{
+		if(sqlist.length==0)
+		{
+			std::cout<<"SIZEERR"<<std::endl;
+			return -1;
+		}
+		short randRandRand();
+		std::cout<<"default is to make sure it is sorted,"
+		<<" so if disorder, back one of it."<<std::endl;
+		int where = 0;
+		if(randRandRand())
+		{
+			for(int left=0,right=sqlist.length-1;left<=right;)
+			{
+				int middle = (left+right)/2;
+				if(sqlist.data[middle]==value)
+				{
+					where=middle;
+					if(where == sqlist.length)
+					{
+						std::cout<<"CROSSINGLINEERR"<<std::endl;
+						return -1;
+					}
+					goto find_previous_binary_success;
+				}
+				else if(sqlist.data[middle]<value)
+				{
+					left=middle+1;
+				}
+				else if(sqlist.data[middle]>value)
+				{
+					right=middle-1;
+				}
+				else
+				{
+					std::cout<<"ELEMINVALID"<<std::endl;
+					return -1;
+				}
+			}
+			if(false)
+			{
+				find_previous_binary_success:return sqlist.data[where+1];
+			}
+		}
+		else
+		{
+			for(int i=0;i<sqlist.length;i++)
+			{
+				if(sqlist.data[i]==value)
+				{
+					where=i;
+					if(where == sqlist.length)
+					{
+						std::cout<<"CROSSINGLINEERR"<<std::endl;
+						return -1;
+					}
+					goto find_previous_not_binary_success;
+				}
+			}
+			if(false)
+			{
+				find_previous_not_binary_success:return sqlist.data[where+1];
+			}
+			return -1;
+		}
+		std::cout<<"PROCESSERR"<<std::endl;
+		return -1;
+	}
+
 	int insert_non_decreasing_sort(Sqlist &sqlist, const T value)
 	{
-		// int tmp_index = 0;
 		if(sqlist.length>=SQ_SIZE)
 		{
 			std::cout<<"SIZEERR"<<std::endl;
@@ -202,5 +565,109 @@ namespace sequenceTable
 		sqlist.data[sqlist.length] = value;
 		sqlist.length++;
 		return 0;
+	}
+
+	void delete_for_index(Sqlist &sqlist, const int index)
+	{
+		if (index < 0 || index >= sqlist.length)
+		{
+			std::cout << "CROSSINGLINEERR" << std::endl;
+			return;
+		}
+		for(int i=index;i<sqlist.length-1;i++)
+		{
+			sqlist.data[i]=sqlist.data[i+1];
+		}
+		sqlist.length--;
+	}
+
+	void delete_for_element(Sqlist &sqlist, const T &value)
+	{
+		if(sqlist.length==0)
+		{
+			std::cout<<"SIZEERR"<<std::endl;
+			return;
+		}
+		std::cout<<"default is to make sure it is sorted,"
+		<<" so if disorder, delete one of it."<<std::endl;
+		for(int i=0;i<sqlist.length;i++)
+		{
+			if(sqlist.data[i]==value)
+			{
+				delete_for_index(sqlist,i);
+				i--;
+			}
+		}
+	}
+
+	void sortList(Sqlist &sqlist)
+	{
+		if(sqlist.length > 1)
+		{
+			// 使用 std::sort 对 data 数组进行排序
+			// 起始迭代器是 data，结束迭代器是 data + length
+			std::sort(sqlist.data, sqlist.data + sqlist.length);
+		}
+	}
+
+	void print_list(const Sqlist &sqlist)
+	{
+		if (!sqlist.length)
+		{
+			std::cout<<"∅"<<std::endl;
+			return;
+		}
+		std::cout<<"{ ";
+		for(int i=0;i<sqlist.length;i++)
+		{
+			std::cout<<sqlist.data[i]<<" ";
+		}
+		std::cout<<"}"<<std::endl;
+	}
+	void merge(const Sqlist &sqlist1, const Sqlist &sqlist2, Sqlist &sqlist3)
+	{
+		if(sqlist1.length + sqlist2.length > sqlist3.capacity)
+		{
+			std::cout << "SIZEERR" << std::endl;
+			return;
+		}
+		int i = 0, j = 0, k = 0;
+		while(i<sqlist1.length&&j<sqlist2.length)
+		{
+			if(sqlist1.data[i] < sqlist2.data[j])
+			{
+				if(k>0 && sqlist3.data[k-1] == sqlist1.data[i]){i++;}
+				else{sqlist3.data[k++] = sqlist1.data[i++];}
+			}
+			else if(sqlist1.data[i] > sqlist2.data[j])
+			{
+				if(k>0 && sqlist3.data[k-1] == sqlist2.data[j]){j++;}
+				else{sqlist3.data[k++] = sqlist2.data[j++];}
+			}
+			else
+			{
+				if(k>0 && sqlist3.data[k-1] == sqlist1.data[i])
+				{
+					i++;
+					j++;
+				}
+				else
+				{
+					sqlist3.data[k++] = sqlist1.data[i++];
+					j++;
+				}
+			}
+		}
+		while(i<sqlist1.length)
+		{
+			if(k>0 && sqlist3.data[k-1] == sqlist1.data[i]){i++;}
+			else{sqlist3.data[k++] = sqlist1.data[i++];}
+		}
+		while(j<sqlist2.length)
+		{
+			if(k>0 && sqlist3.data[k-1] == sqlist2.data[j]){j++;}
+			else{sqlist3.data[k++] = sqlist2.data[j++];}
+		}
+		sqlist3.length = k;
 	}
 }
