@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(data_constructure main.cpp
         ex2/sequenceTable.cpp
-        full_prototypes.h)
+        full_prototypes.h
+        ex3/singlyLinkedList.cpp)

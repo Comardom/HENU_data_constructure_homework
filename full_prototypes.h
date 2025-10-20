@@ -8,4 +8,8 @@ namespace sequenceTable
 {
 	int main_SQ();
 }
+namespace singlyLinkedList
+{
+	int main();
+}
 #endif //FULL_PROTOTYPES_H

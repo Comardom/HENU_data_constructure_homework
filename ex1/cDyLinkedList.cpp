@@ -8,7 +8,6 @@
 //
 namespace cDyLinkedList
 {
-	//这个链表是跟着ai写的
 	//链表内部数据与连接
 	typedef struct Node {
 		int data;     // 存储数据元素

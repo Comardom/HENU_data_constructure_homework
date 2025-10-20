@@ -3,6 +3,7 @@
 int main()
 {
 	std::cout << "Hello, World!" << std::endl;
-	sequenceTable::main_SQ();
+	// sequenceTable::main_SQ();
+	singlyLinkedList::main();
 	return 0;
 }

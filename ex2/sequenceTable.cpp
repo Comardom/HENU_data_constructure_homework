@@ -115,6 +115,10 @@ namespace sequenceTable
 						std::cout << "index." << std::endl;
 						int index = 0;
 						num_input_s(index);
+						if(index<0 || index>list_ptrA->length)
+						{
+							std::cout<<"INDEXERR."<<std::endl;
+						}
 						std::cout << list_ptrA->data[index] << std::endl;
 					}
 					else
@@ -126,7 +130,7 @@ namespace sequenceTable
 					std::cout << "default all to find." << std::endl;
 					if(list_ptrA)
 					{
-						std::cout << "what index?" << std::endl;
+						std::cout << "what element?" << std::endl;
 						int tmp_index;
 						num_input_s(tmp_index);
 						find_index_of_value(*list_ptrA, tmp_index);
@@ -237,7 +241,14 @@ namespace sequenceTable
 					}
 					break;
 				case 14:
-					print_list(*list_ptrA);
+					if(list_ptrA)
+					{
+						print_list(*list_ptrA);
+					}
+					else
+					{
+						std::cout<<"No creation."<<std::endl;
+					}
 					break;
 				case 15:
 					list_ptrB = new Sqlist;
@@ -588,8 +599,8 @@ namespace sequenceTable
 			std::cout<<"SIZEERR"<<std::endl;
 			return;
 		}
-		std::cout<<"default is to make sure it is sorted,"
-		<<" so if disorder, delete one of it."<<std::endl;
+		// std::cout<<"default is to make sure it is sorted,"
+		// <<" so if disorder, delete one of it."<<std::endl;
 		for(int i=0;i<sqlist.length;i++)
 		{
 			if(sqlist.data[i]==value)
